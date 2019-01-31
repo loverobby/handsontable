@@ -2094,6 +2094,7 @@ export default function Core(rootElement, userSettings, rootInstanceSymbol = fal
    * @memberof Core#
    * @function toVisualRow
    * @param {Number} row Physical row index.
+   * @param {undefined|String} source Source of call i.e. plugin name.
    * @returns {Number} Returns visual row index.
    */
   this.toVisualRow = row => this.rowIndexMapper.getVisualIndex(row);
@@ -2107,6 +2108,7 @@ export default function Core(rootElement, userSettings, rootInstanceSymbol = fal
    * @memberof Core#
    * @function toVisualColumn
    * @param {Number} column Physical column index.
+   * @param {undefined|String} source Source of call i.e. plugin name.
    * @returns {Number} Returns visual column index.
    */
   this.toVisualColumn = column => this.columnIndexMapper.getVisualIndex(column);
@@ -2120,6 +2122,7 @@ export default function Core(rootElement, userSettings, rootInstanceSymbol = fal
    * @memberof Core#
    * @function toPhysicalRow
    * @param {Number} row Visual row index.
+   * @param {undefined|String} source Source of call i.e. plugin name.
    * @returns {Number} Returns physical row index.
    */
   this.toPhysicalRow = row => this.rowIndexMapper.getPhysicalIndex(row);
@@ -2133,6 +2136,7 @@ export default function Core(rootElement, userSettings, rootInstanceSymbol = fal
    * @memberof Core#
    * @function toPhysicalColumn
    * @param {Number} column Visual column index.
+   * @param {undefined|String} source Source of call i.e. plugin name.
    * @returns {Number} Returns physical column index.
    */
   this.toPhysicalColumn = column => this.columnIndexMapper.getPhysicalIndex(column);
@@ -2860,6 +2864,11 @@ export default function Core(rootElement, userSettings, rootInstanceSymbol = fal
 
         return arr[visualColumnIndex];
       };
+<<<<<<< HEAD
+=======
+      const baseCol = columnIndex;
+      const physicalColumn = instance.toPhysicalColumn(baseCol);
+>>>>>>> WIP: Changed all modify / unmodify hooks calls #5751
 
       const physicalColumn = instance.toPhysicalColumn(columnIndex);
       const prop = translateVisualIndexToColumns(physicalColumn);

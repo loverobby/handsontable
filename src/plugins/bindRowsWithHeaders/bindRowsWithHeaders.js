@@ -91,7 +91,63 @@ class BindRowsWithHeaders extends BasePlugin {
    * @returns {Number}
    */
   onModifyRowHeader(row) {
+<<<<<<< HEAD
     return this.headerIndexes.getValueAtIndex(this.hot.toPhysicalRow(row));
+=======
+    return this.bindStrategy.translate(this.hot.toPhysicalRow(row));
+  }
+
+  /**
+   * On after create row listener.
+   *
+   * @private
+   * @param {Number} index Row index.
+   * @param {Number} amount Defines how many rows removed.
+   */
+  onAfterCreateRow(index, amount) {
+    this.bindStrategy.createRow(index, amount);
+  }
+
+  /**
+   * On before remove row listener.
+   *
+   * @private
+   * @param {Number} index Row index.
+   * @param {Number} amount Defines how many rows removed.
+   *
+   * @fires Hooks#modifyRow
+   */
+  onBeforeRemoveRow(index, amount) {
+    this.removedRows.length = 0;
+
+    if (index !== false) {
+      // Collect physical row index.
+      rangeEach(index, index + amount - 1, (removedIndex) => {
+        this.removedRows.push(this.hot.toPhysicalRow(removedIndex));
+      });
+    }
+  }
+
+  /**
+   * On after remove row listener.
+   *
+   * @private
+   */
+  onAfterRemoveRow() {
+    this.bindStrategy.removeRow(this.removedRows);
+  }
+
+  /**
+   * On after load data listener.
+   *
+   * @private
+   * @param {Boolean} firstRun Indicates if hook was fired while Handsontable initialization.
+   */
+  onAfterLoadData(firstRun) {
+    if (!firstRun) {
+      this.bindStrategy.createMap(this.hot.countSourceRows());
+    }
+>>>>>>> WIP: Changed all modify / unmodify hooks calls #5751
   }
 
   /**
