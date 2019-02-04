@@ -173,6 +173,7 @@ class ManualRowMove extends BasePlugin {
 
     priv.cachedDropIndex = void 0;
 
+<<<<<<< HEAD
     if (beforeMoveHook === false) {
       return;
     }
@@ -180,6 +181,17 @@ class ManualRowMove extends BasePlugin {
     if (movePossible) {
       this.hot.rowIndexMapper.moveIndexes(rows, finalIndex);
     }
+=======
+    if (!priv.disallowMoving) {
+      // first we need to rewrite an visual indexes to physical for save reference after move
+      arrayEach(rows, (row, index, array) => {
+        array[index] = this.rowsMapper.getPhysicalIndex(row);
+      });
+
+      // next, when we have got an physical indexes, we can move rows
+      arrayEach(rows, (row, index) => {
+        const actualPosition = this.rowsMapper.getVisualIndex(row);
+>>>>>>> WIP: Refactored index mapper #5771
 
     const movePerformed = movePossible && this.isRowOrderChanged(rows, finalIndex);
 
@@ -641,10 +653,18 @@ class ManualRowMove extends BasePlugin {
 
     priv.rowsToMove.length = 0;
 
+<<<<<<< HEAD
     if (movePerformed === true) {
       this.persistentStateSave();
       this.hot.render();
       this.hot.view.wt.wtOverlays.adjustElementsSize(true);
+=======
+    if (!priv.disallowMoving) {
+      const selectionStart = this.rowsMapper.getVisualIndex(priv.rowsToMove[0]);
+      const selectionEnd = this.rowsMapper.getVisualIndex(priv.rowsToMove[rowsLen - 1]);
+      this.changeSelection(selectionStart, selectionEnd);
+    }
+>>>>>>> WIP: Refactored index mapper #5771
 
       const selectionStart = this.hot.toVisualRow(firstMovedPhysicalRow);
       const selectionEnd = selectionStart + rowsLen - 1;
@@ -684,7 +704,54 @@ class ManualRowMove extends BasePlugin {
    * @private
    */
   onAfterLoadData() {
+<<<<<<< HEAD
     this.moveBySettingsOrLoad();
+=======
+    this.updateRowsMapper();
+  }
+
+  /**
+   * 'modifyRow' hook callback.
+   *
+   * @private
+   * @param {Number} row Visual Row index.
+   * @returns {Number} Physical row index.
+   */
+  onModifyRow(row, source) {
+    let physicalRow = row;
+
+    if (source !== this.pluginName) {
+      const rowInMapper = this.rowsMapper.getPhysicalIndex(physicalRow);
+      physicalRow = rowInMapper === null ? physicalRow : rowInMapper;
+    }
+
+    return physicalRow;
+  }
+
+  /**
+   * 'unmodifyRow' hook callback.
+   *
+   * @private
+   * @param {Number} row Physical row index.
+   * @returns {Number} Visual row index.
+   */
+  onUnmodifyRow(row) {
+    const indexInMapper = this.rowsMapper.getVisualIndex(row);
+
+    return indexInMapper === null ? row : indexInMapper;
+  }
+
+  /**
+   * `afterPluginsInitialized` hook callback.
+   *
+   * @private
+   */
+  onAfterPluginsInitialized() {
+    this.updateRowsMapper();
+    this.initialSettings();
+    this.backlight.build();
+    this.guideline.build();
+>>>>>>> WIP: Refactored index mapper #5771
   }
 
   /**
