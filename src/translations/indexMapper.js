@@ -383,6 +383,21 @@ class IndexMapper {
       this.runLocalHooks('cacheUpdated');
     }
   }
+
+  updateIndexesAfterRemoval(removedIndexes) {
+    this.indexesSequence = this.getRemovedIndexes(this.indexesSequence, removedIndexes);
+    this.skippedIndexes = this.getRemovedIndexes(this.skippedIndexes, removedIndexes);
+    this.indexesSequence = this.getDecreasedIndexes(this.indexesSequence, removedIndexes);
+    this.skippedIndexes = this.getDecreasedIndexes(this.skippedIndexes, removedIndexes);
+  }
+
+  getRemovedIndexes(indexesList, removedIndexes) {
+    return arrayFilter(indexesList, index => removedIndexes.includes(index) === false);
+  }
+
+  getDecreasedIndexes(indexesList, removedIndexes) {
+    return arrayMap(indexesList, index => index - removedIndexes.filter(removedRow => removedRow < index).length);
+  }
 }
 
 mixin(IndexMapper, localHooks);
