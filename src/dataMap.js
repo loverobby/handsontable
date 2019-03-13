@@ -606,7 +606,7 @@ class DataMap {
    * @returns {*}
    */
   get(row, prop) {
-    const physicalRow = this.instance.toPhysicalRow(row);
+    const physicalRow = this.instance.recordTranslator.toPhysicalRow(row);
 
     let dataRow = this.dataSource[physicalRow];
     // TODO: To remove, use 'modifyData' hook instead (see below)
