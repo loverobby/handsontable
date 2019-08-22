@@ -351,9 +351,9 @@ class TableView {
       preventOverflow: () => this.settings.preventOverflow,
       preventWheel: () => this.settings.preventWheel,
       stretchH: () => this.settings.stretchH,
-      data: this.instance.getDataAtCell,
+      data: this.instance.getRenderableDataAtCell,
       totalRows: () => this.instance.countRows(),
-      totalColumns: () => this.instance.countCols(),
+      totalColumns: () => this.instance.countRenderableColumns(),
       fixedColumnsLeft: () => this.settings.fixedColumnsLeft,
       fixedRowsTop: () => this.settings.fixedRowsTop,
       fixedRowsBottom: () => this.settings.fixedRowsBottom,
@@ -375,7 +375,7 @@ class TableView {
 
         if (this.instance.hasColHeaders()) {
           headerRenderers.push((column, TH) => {
-            this.appendColHeader(column, TH);
+            this.appendColHeader(this.instance.toRenderableColumn(column), TH);
           });
         }
 
@@ -386,8 +386,8 @@ class TableView {
       columnWidth: this.instance.getColWidth,
       rowHeight: this.instance.getRowHeight,
       cellRenderer: (row, col, TD) => {
-        const cellProperties = this.instance.getCellMeta(row, col);
-        const prop = this.instance.colToProp(col);
+        const cellProperties = this.instance.getCellMeta(row, this.instance.toRenderableColumn(col));
+        const prop = this.instance.getColumnProperty(col);
         let value = this.instance.getDataAtRowProp(row, prop);
 
         if (this.instance.hasHook('beforeValueRender')) {
@@ -546,6 +546,7 @@ class TableView {
         this.instance.runHooks('afterViewportRowCalculatorOverride', calc);
       },
       viewportColumnCalculatorOverride: (calc) => {
+        const cols = this.instance.countRenderableColumns();
         let viewportOffset = this.settings.viewportColumnRenderingOffset;
 
         if (viewportOffset === 'auto' && this.settings.fixedColumnsLeft) {

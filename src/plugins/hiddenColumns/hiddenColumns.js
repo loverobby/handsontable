@@ -8,9 +8,11 @@ import Hooks from '../../pluginHooks';
 import hideColumnItem from './contextMenuItem/hideColumn';
 import showColumnItem from './contextMenuItem/showColumn';
 
-import { ValueMap } from '../../translations';
+import { HiddenMap } from '../../translations';
 
 import './hiddenColumns.css';
+
+const PLUGIN_NAME = 'hiddenColumns';
 
 Hooks.getSingleton().register('beforeHideColumns');
 Hooks.getSingleton().register('afterHideColumns');
@@ -113,10 +115,11 @@ class HiddenColumns extends BasePlugin {
       return;
     }
 
-    this.hiddenColumnsMap = new ValueMap(false);
+    this.hiddenColumnsMap = new HiddenMap();
     this.hiddenColumnsMap.addLocalHook('init', () => this.onMapInit());
-    this.columnIndexMapper.registerMap('hiddenColumns', this.hiddenColumnsMap);
+    this.columnIndexMapper.registerMap(PLUGIN_NAME, this.hiddenColumnsMap);
 
+<<<<<<< HEAD
     this.addHook('afterGetColHeader', (col, TH) => this.onAfterGetColHeader(col, TH));
     this.addHook('afterContextMenuDefaultOptions', options => this.onAfterContextMenuDefaultOptions(options));
     this.addHook('modifyColWidth', (width, col) => this.onModifyColWidth(width, col));
@@ -126,6 +129,13 @@ class HiddenColumns extends BasePlugin {
     this.addHook('beforeStretchingColumnWidth', (width, column) => this.onBeforeStretchingColumnWidth(width, column));
     this.addHook('afterCreateCol', (index, amount) => this.onAfterCreateCol(index, amount));
     this.addHook('afterRemoveCol', (index, amount) => this.onAfterRemoveCol(index, amount));
+=======
+    this.addHook('afterContextMenuDefaultOptions', (...args) => this.onAfterContextMenuDefaultOptions(...args));
+    this.addHook('afterGetColHeader', (...args) => this.onAfterGetColHeader(...args));
+    // this.addHook('beforeSetRangeEnd', (...args) => this.onBeforeSetRangeEnd(...args));
+    // this.addHook('beforeSetRangeStartOnly', (...args) => this.onBeforeSetRangeStart(...args));
+    this.addHook('hiddenColumn', (...args) => this.isHidden(...args));
+>>>>>>> Added: hiddenMap, changed hiddenColumns doesn't need to render TDs for hidden columns. #6178
 
     super.enablePlugin();
   }
@@ -148,7 +158,7 @@ class HiddenColumns extends BasePlugin {
    * Disables the plugin functionality for this Handsontable instance.
    */
   disablePlugin() {
-    this.columnIndexMapper.unregisterMap('hiddenColumns');
+    this.columnIndexMapper.unregisterMap(PLUGIN_NAME);
     this.settings = {};
     this.lastSelectedColumn = -1;
 
@@ -186,8 +196,10 @@ class HiddenColumns extends BasePlugin {
     if (validColumns) {
       destinationHideConfig = currentHideConfig.filter(hiddenColumn => columns.includes(hiddenColumn) === false);
 
-      columns.forEach((visualColumn) => {
-        this.hiddenColumnsMap.setValueAtIndex(this.hot.toPhysicalColumn(visualColumn), false);
+      this.hot.executeBatchOperations(() => {
+        columns.forEach((visualColumn) => {
+          this.hiddenColumnsMap.setValueAtIndex(visualColumn, false);
+        });
       });
     }
 
@@ -225,8 +237,15 @@ class HiddenColumns extends BasePlugin {
     }
 
     if (validColumns) {
+<<<<<<< HEAD
       columns.forEach((physicalColumn) => {
         this.hiddenColumnsMap.setValueAtIndex(physicalColumn, true);
+=======
+      this.hot.executeBatchOperations(() => {
+        columns.forEach((visualColumn) => {
+          this.hiddenColumnsMap.setValueAtIndex(this.hot.toRenderableColumn(visualColumn), true);
+        });
+>>>>>>> Added: hiddenMap, changed hiddenColumns doesn't need to render TDs for hidden columns. #6178
       });
       // this.hiddenColumns = destinationHideConfig;
     }
@@ -290,6 +309,7 @@ class HiddenColumns extends BasePlugin {
   }
 
   /**
+<<<<<<< HEAD
    * 
    * @param {Number[]|string} columns
    */
@@ -330,6 +350,8 @@ class HiddenColumns extends BasePlugin {
   }
 
   /**
+=======
+>>>>>>> Added: hiddenMap, changed hiddenColumns doesn't need to render TDs for hidden columns. #6178
    * Adds the additional column width for the hidden column indicators.
    *
    * @private
@@ -350,6 +372,7 @@ class HiddenColumns extends BasePlugin {
   }
 
   /**
+<<<<<<< HEAD
    * Sets the copy-related cell meta.
    *
    * @private
@@ -419,6 +442,8 @@ class HiddenColumns extends BasePlugin {
   }
 
   /**
+=======
+>>>>>>> Added: hiddenMap, changed hiddenColumns doesn't need to render TDs for hidden columns. #6178
    * Modifies the copyable range, accordingly to the provided config.
    *
    * @private
@@ -465,40 +490,28 @@ class HiddenColumns extends BasePlugin {
    * Adds the needed classes to the headers.
    *
    * @private
-   * @param {Number} column
-   * @param {HTMLElement} TH
+   * @param {Number} column Visual column index.
+   * @param {HTMLElement} TH Header's TH element.
    */
   onAfterGetColHeader(column, TH) {
-    if (this.isHidden(column)) {
-      return;
-    }
-
-    let firstSectionHidden = true;
-    let i = column - 1;
-
-    do {
-      if (!this.isHidden(i)) {
-        firstSectionHidden = false;
-        break;
-      }
-      i -= 1;
-    } while (i >= 0);
-
-    if (firstSectionHidden) {
-      addClass(TH, 'firstVisibleColumn');
-    }
-
     if (!this.settings.indicators) {
       return;
     }
 
-    if (this.isHidden(column - 1)) {
-      addClass(TH, 'afterHiddenColumn');
+    const physicalColumn = this.hot.toPhysicalColumn(column);
+    const sequence = this.columnIndexMapper.getIndexesSequence();
+    const currentPosition = sequence.indexOf(physicalColumn);
+    const classList = [];
+
+    if (this.isHidden(sequence[currentPosition - 1], true)) {
+      classList.push('afterHiddenColumn');
     }
 
-    if (this.isHidden(column + 1) && column > -1) {
-      addClass(TH, 'beforeHiddenColumn');
+    if (this.isHidden(sequence[currentPosition + 1], true) && column > -1) {
+      classList.push('beforeHiddenColumn');
     }
+
+    addClass(TH, classList);
   }
 
   /**
@@ -656,15 +669,13 @@ class HiddenColumns extends BasePlugin {
    * Destroys the plugin instance.
    */
   destroy() {
+    this.columnIndexMapper.unregisterMap(PLUGIN_NAME);
+
     super.destroy();
   }
 
 }
 
-function hiddenRenderer(hotInstance, td) {
-  td.textContent = '';
-}
-
-registerPlugin('hiddenColumns', HiddenColumns);
+registerPlugin(PLUGIN_NAME, HiddenColumns);
 
 export default HiddenColumns;
