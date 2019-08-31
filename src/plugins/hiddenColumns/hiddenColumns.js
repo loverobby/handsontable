@@ -119,23 +119,11 @@ class HiddenColumns extends BasePlugin {
     this.hiddenColumnsMap.addLocalHook('init', () => this.onMapInit());
     this.columnIndexMapper.registerMap(PLUGIN_NAME, this.hiddenColumnsMap);
 
-<<<<<<< HEAD
-    this.addHook('afterGetColHeader', (col, TH) => this.onAfterGetColHeader(col, TH));
-    this.addHook('afterContextMenuDefaultOptions', options => this.onAfterContextMenuDefaultOptions(options));
-    this.addHook('modifyColWidth', (width, col) => this.onModifyColWidth(width, col));
-    this.addHook('beforeSetRangeStartOnly', coords => this.onBeforeSetRangeStart(coords));
-    this.addHook('beforeSetRangeEnd', coords => this.onBeforeSetRangeEnd(coords));
-    this.addHook('hiddenColumn', column => this.isHidden(column));
-    this.addHook('beforeStretchingColumnWidth', (width, column) => this.onBeforeStretchingColumnWidth(width, column));
-    this.addHook('afterCreateCol', (index, amount) => this.onAfterCreateCol(index, amount));
-    this.addHook('afterRemoveCol', (index, amount) => this.onAfterRemoveCol(index, amount));
-=======
     this.addHook('afterContextMenuDefaultOptions', (...args) => this.onAfterContextMenuDefaultOptions(...args));
     this.addHook('afterGetColHeader', (...args) => this.onAfterGetColHeader(...args));
     // this.addHook('beforeSetRangeEnd', (...args) => this.onBeforeSetRangeEnd(...args));
     // this.addHook('beforeSetRangeStartOnly', (...args) => this.onBeforeSetRangeStart(...args));
     this.addHook('hiddenColumn', (...args) => this.isHidden(...args));
->>>>>>> Added: hiddenMap, changed hiddenColumns doesn't need to render TDs for hidden columns. #6178
 
     super.enablePlugin();
   }
@@ -146,10 +134,7 @@ class HiddenColumns extends BasePlugin {
   updatePlugin() {
     this.disablePlugin();
     this.enablePlugin();
-<<<<<<< HEAD
     this.onMapInit();
-=======
->>>>>>> WIP. Reverted changes in indexMapper. Finished transformation to use IndexMapper in HiddenColumns. #5751
 
     super.updatePlugin();
   }
@@ -177,14 +162,10 @@ class HiddenColumns extends BasePlugin {
     let destinationHideConfig = currentHideConfig;
 
     if (validColumns) {
-<<<<<<< HEAD
       // destinationHideConfig = this.hiddenColumns.filter(hiddenColumn => columns.includes(hiddenColumn) === false);
       columns.forEach((physicalColumn) => {
         this.hiddenColumnsMap.setValueAtIndex(physicalColumn, false);
       });
-=======
-      destinationHideConfig = currentHideConfig.filter(column => !columns.includes(column));
->>>>>>> WIP. Reverted changes in indexMapper. Finished transformation to use IndexMapper in HiddenColumns. #5751
     }
 
     const continueHiding = this.hot.runHooks('beforeUnhideColumns', currentHideConfig, destinationHideConfig, validColumns);
@@ -237,15 +218,10 @@ class HiddenColumns extends BasePlugin {
     }
 
     if (validColumns) {
-<<<<<<< HEAD
-      columns.forEach((physicalColumn) => {
-        this.hiddenColumnsMap.setValueAtIndex(physicalColumn, true);
-=======
       this.hot.executeBatchOperations(() => {
         columns.forEach((visualColumn) => {
           this.hiddenColumnsMap.setValueAtIndex(this.hot.toRenderableColumn(visualColumn), true);
         });
->>>>>>> Added: hiddenMap, changed hiddenColumns doesn't need to render TDs for hidden columns. #6178
       });
       // this.hiddenColumns = destinationHideConfig;
     }
@@ -350,8 +326,6 @@ class HiddenColumns extends BasePlugin {
   }
 
   /**
-=======
->>>>>>> Added: hiddenMap, changed hiddenColumns doesn't need to render TDs for hidden columns. #6178
    * Adds the additional column width for the hidden column indicators.
    *
    * @private
@@ -372,7 +346,6 @@ class HiddenColumns extends BasePlugin {
   }
 
   /**
-<<<<<<< HEAD
    * Sets the copy-related cell meta.
    *
    * @private
@@ -442,8 +415,6 @@ class HiddenColumns extends BasePlugin {
   }
 
   /**
-=======
->>>>>>> Added: hiddenMap, changed hiddenColumns doesn't need to render TDs for hidden columns. #6178
    * Modifies the copyable range, accordingly to the provided config.
    *
    * @private

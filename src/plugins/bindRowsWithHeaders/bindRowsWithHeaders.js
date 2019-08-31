@@ -147,7 +147,6 @@ class BindRowsWithHeaders extends BasePlugin {
     if (!firstRun) {
       this.bindStrategy.createMap(this.hot.countSourceRows());
     }
->>>>>>> WIP: Changed all modify / unmodify hooks calls #5751
   }
 
   /**

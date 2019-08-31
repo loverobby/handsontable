@@ -486,13 +486,8 @@ class ManualRowResize extends BasePlugin {
    * @param {Number} row Visual row index.
    * @returns {Number}
    */
-<<<<<<< HEAD
   onModifyRowHeight(height, row) {
     let newHeight = height;
-=======
-  setManualSize(row, height) {
-    const physicalRow = this.hot.toPhysicalRow(row);
->>>>>>> WIP: Changed all modify / unmodify hooks calls #5751
 
     if (this.enabled) {
       const physicalRow = this.hot.toPhysicalRow(row);
@@ -511,7 +506,6 @@ class ManualRowResize extends BasePlugin {
    *
    * @private
    */
-<<<<<<< HEAD
   onMapInit() {
     const priv = privatePool.get(this);
     const initialSetting = this.hot.getSettings().manualRowResize;
@@ -530,14 +524,6 @@ class ManualRowResize extends BasePlugin {
         });
 
         priv.config = initialSetting;
-=======
-  onModifyRowHeight(height, row) {
-    if (this.enabled) {
-      const autoRowSizePlugin = this.hot.getPlugin('autoRowSize');
-      const autoRowHeightResult = autoRowSizePlugin ? autoRowSizePlugin.heights[row] : null;
-      const physicalRow = this.hot.toPhysicalRow(row);
-      const manualRowHeight = this.manualRowHeights[physicalRow];
->>>>>>> WIP: Changed all modify / unmodify hooks calls #5751
 
       } else if (initialSetting === true && Array.isArray(priv.config)) {
         priv.config.forEach((height, index) => {
